@@ -6,10 +6,14 @@ const state = require("../utils/state");
 const cronModel = require("../models/cron");
 
 const getProduct = async (req, res, site) => {
-    const products = await ProductModel.find({ site }).populate({path: 'url', match: {$ne: null}});
-    const history = await historyModel.find({ site });
-    const newdeleteamount = await state()
-    return res.status(200).json({success: false, data: {products, history, total: products.length}, newdeleteamount});
+    try {
+        const products = await ProductModel.find({ site }).populate({path: 'url', match: {$ne: null}});
+        const history = await historyModel.find({ site });
+        const newdeleteamount = await state()
+        return res.status(200).json({success: true, data: {products, history, total: products.length}, newdeleteamount});
+    } catch (error) {
+        return res.status(400).json({success: false, message: error.message });
+    }
 }
 
 const startScraping = async (req, res, site, getProductInfo, getUrls) => {
