@@ -20,7 +20,7 @@ const mohawkRoute = require('./mohawk/mohawk');
 
 const app = express();
 app.use("/", function(req, res) {
-    return res.json({
+    res.json({
         success: 'Carpet Scaper API Is Live!'
     });
 })
