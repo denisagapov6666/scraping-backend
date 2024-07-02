@@ -19,11 +19,6 @@ const rebelRoute = require('./rebel/rebel');
 const mohawkRoute = require('./mohawk/mohawk');
 
 const app = express();
-app.use("/", function(req, res) {
-    res.json({
-        success: 'Carpet Scaper API Is Live!'
-    });
-})
 app.use("/prestige",prestigeRoute);
 app.use("/couristan",couristanRoute)
 app.use("/fibreworks",fibreRoute)
@@ -42,6 +37,11 @@ app.use("/hardwood",hardwoodRoute)
 app.use("/adorra",adorraRoute)
 app.use("/rebel",rebelRoute)
 app.use("/mohawk",mohawkRoute)
+app.use("/", function(req, res) {
+    res.json({
+        success: 'Carpet Scaper API Is Live!'
+    });
+})
 module.exports = app;
 
 
