@@ -6,15 +6,10 @@ const state = require("../utils/state");
 const cronModel = require("../models/cron");
 
 const getProduct = async (req, res, site) => {
-    const urlmodels = await URLModel.find({ site });
-    const products = await ProductModel
-        .find({ url: { $in: urlmodels.map(urlmodel => urlmodel._id) } })
-        .populate({ path: 'url' });
-    const total = await ProductModel
-        .countDocuments({ url: { $in: urlmodels.map(urlmodel => urlmodel._id) } })
+    const products = await ProductModel.find({ site }).populate({path: 'url', match: {$ne: null}});
     const history = await historyModel.find({ site });
     const newdeleteamount = await state()
-    return res.status(200).json({ success: true, data: { products, total, history }, newdeleteamount })
+    return res.status(200).json({success: false, data: {products, history, total: products.length}, newdeleteamount});
 }
 
 const startScraping = async (req, res, site, getProductInfo, getUrls) => {
@@ -28,7 +23,7 @@ const startScraping = async (req, res, site, getProductInfo, getUrls) => {
         newpro = newproducts.length;
     }
     const urlmodels = await URLModel.find({ site });
-    const products = await ProductModel.find({ url: { $in: urlmodels.map(urlmodel => urlmodel._id) } }).populate({ path: "url" });
+    const products = await ProductModel.find({ site }).populate({path: 'url', match: {$ne: null}});
     const history = await historyModel.find({ site });
     const total = await ProductModel
         .countDocuments({ url: { $in: urlmodels.map(urlmodel => urlmodel._id) } })
