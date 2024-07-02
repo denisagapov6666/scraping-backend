@@ -12,7 +12,7 @@ scarpingConnectDB();
 
 
 // cors
-app.use(cors());
+app.use(cors("*"));
 
 // initialize middleware
 app.use(express.json({ extended: false }));
