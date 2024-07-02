@@ -12,8 +12,9 @@ scarpingConnectDB();
 
 
 // cors
-app.use(cors("*"));
-
+app.use(cors({
+    origin: ['https://carpetscraper0303.vercel.app', 'http://localhost:3000']
+}));
 // initialize middleware
 app.use(express.json({ extended: false }));
 
