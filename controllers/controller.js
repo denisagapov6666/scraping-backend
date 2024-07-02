@@ -7,7 +7,7 @@ const cronModel = require("../models/cron");
 
 const getProduct = async (req, res, site) => {
     try {
-        const products = await ProductModel.find({ site }).populate({path: 'url', match: {$ne: null}});
+        const products = await ProductModel.find({ site }).populate({path: 'url'});
         const history = await historyModel.find({ site });
         const newdeleteamount = await state()
         return res.status(200).json({success: true, data: {products, history, total: products.length}, newdeleteamount});
@@ -27,7 +27,7 @@ const startScraping = async (req, res, site, getProductInfo, getUrls) => {
         newpro = newproducts.length;
     }
     const urlmodels = await URLModel.find({ site });
-    const products = await ProductModel.find({ site }).populate({path: 'url', match: {$ne: null}});
+    const products = await ProductModel.find({ site }).populate({path: 'url'});
     const history = await historyModel.find({ site });
     const total = await ProductModel
         .countDocuments({ url: { $in: urlmodels.map(urlmodel => urlmodel._id) } })
