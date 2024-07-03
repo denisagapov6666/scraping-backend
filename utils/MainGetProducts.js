@@ -1,25 +1,24 @@
 const URLModel = require('../models/urls');
 const Product = require('../models/products');
-const { resolve } = require('path');
 
-const mainGetProducts = (site,scrapeData) => {
+const mainGetProducts = (site, scrapeData) => {
     console.log('Get Product Info:');
     return new Promise(async resolve => {
         try {
             const allUrlModels = await URLModel.find({site, new: true });
             let count = 0;
-    
             const scrapingOneUrl = async (i) => {
                 console.log(allUrlModels[i].url)
                 const products = await scrapeData(allUrlModels[i].url)
-                if(products){
+                await Product.deleteMany({url: allUrlModels[i]._id});
 
-                    if(Array.isArray(products))
+                if(products){
+                    if(Array.isArray(products)){
                         products.forEach(async product => {
                             const newProduct = new Product({ ...product, url: allUrlModels[i]._id });
                             await newProduct.save().then(() => console.log(`${++count} product is saved.`));
                         })
-                    else {
+                    } else {
                         const newProduct = new Product({ ...products, url: allUrlModels[i]._id });
                         await newProduct.save().then(() => console.log(`${++count} product is saved.`));
                     }

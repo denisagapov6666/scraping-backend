@@ -47,8 +47,8 @@ const scrapeData = (url) => new Promise(async (resolve, reject) => {
         });
         const sizeElement = $('.size-stock-msrp-table tbody tr td').eq(0).text().trim();
         const [widthStr, heightStr] = sizeElement.split("x");
-        const width = widthStr.trim();
-        const height = heightStr.trim().split(/\s+/)[0];
+        const width = widthStr?.trim() ?? '';
+        const height = heightStr?.trim().split(/\s+/)[0] ?? '';
         const imageUrls = $('.gallery').map((index, element) => $(element).attr('href')).get();        
         const props = {
             site:"kaleen",
