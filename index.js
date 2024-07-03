@@ -2,6 +2,7 @@ const express =  require('express');
 const cors = require("cors");
 const scarpingConnectDB = require("./config/db");
 
+require('dotenv').config();
 
 const app = express();
 

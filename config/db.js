@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-    mongoose.connect('mongodb+srv://successtogether0303:mvb6Tilr4TJBG3ld@cluster0.xhknjff.mongodb.net/dezigned_db?retryWrites=true&w=majority')
+    mongoose.connect(process.env.MONGO_URL)
         .then(async () => {
             console.log('Connected to MongoDB');
         })
