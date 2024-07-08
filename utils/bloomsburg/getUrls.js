@@ -2,10 +2,13 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const {checkUrl} = require("../MainCheckUrls");
 const site = "bloomsburg";
+const { Clog } = require('../utils');
+
 module.exports = async () => {
+    Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
+
     let pageIndex = 1;
     const urls = [];
-    console.log("Get Urls:");
     try {
         while (true) {
             const URL = `https://bloomsburgcarpet.com/products-list/page/${pageIndex}`;
@@ -31,7 +34,7 @@ module.exports = async () => {
             }
         }
     } catch (error) {
-        console.error('Error fetching URLs:');
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
     return await checkUrl(site,urls)
 };

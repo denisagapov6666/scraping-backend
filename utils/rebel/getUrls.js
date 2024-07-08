@@ -1,8 +1,9 @@
 const axios = require('axios');
 const { checkUrl } = require("../MainCheckUrls");
-const site = "rebel";
+const site = "rebel";const { Clog } = require('../utils');
+
 module.exports = async () => {
-    console.log("Get Urls:");
+    Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
     try {
         // Fetch URLs from the homepage
         const url = "https://www.rebelcarpets.com/pro-gallery-webapp/v1/galleries/1c1a8969-d8b2-4986-985a-23f61025b604?externalId=654e06a6-897c-450d-949f-d8a634b29636&state=PUBLISHED&lang="
@@ -24,8 +25,7 @@ module.exports = async () => {
         const data = await checkUrl(site, urls);
         return data;
     } catch (error) {
-        console.error('Error fetching URLs:', error);
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
-    console.log("End getting Urls:**")
 };
 

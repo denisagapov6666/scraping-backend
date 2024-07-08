@@ -28,9 +28,10 @@ const fetchBrand = async (brandId, brandName, url) => {
         console.error(error);
     }
 };
+const { Clog } = require('../utils');
 
 module.exports = async () => {
-    console.log("Get Urls:");
+    Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
     try {
         // Fetch brands
         await fetchBrand(10028, "HAGAMAN", ""); // 10028 HAGAMAN
@@ -39,8 +40,7 @@ module.exports = async () => {
         const data = await checkUrl(site,urls);
         return data;
     } catch (error) {
-        console.error(error);
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
-    console.log("End getting Urls:**")
 };
 

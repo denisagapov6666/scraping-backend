@@ -2,9 +2,10 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const {checkUrl} = require("../MainCheckUrls");
 const site = "fabrica";
+const { Clog } = require('../utils');
 
 module.exports = async () => {
-    console.log("Get Urls:");
+    Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
     let pageIndex = 1;
     try {
         const urls = []
@@ -35,8 +36,7 @@ module.exports = async () => {
         const data = await checkUrl(site,urls);
         return data;
     } catch (error) {
-        console.error(error);
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
-    console.log("End getting Urls:**");
 };
 

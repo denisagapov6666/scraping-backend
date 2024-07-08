@@ -2,8 +2,10 @@ const ProductModel = require('../models/products');
 const URLModel = require('../models/urls');
 const historyModel = require("../models/history");
 const RequestModel = require("../models/RequestModel");
+const LogsModel = require('../models/log');
 const state = require("../utils/state");
 const cronModel = require("../models/cron");
+const { Clog } = require('../utils/utils');
 
 const getProduct = async (req, res, site) => {
     try {
@@ -21,6 +23,7 @@ const startScraping = async (req, res, site, getProductInfo, getUrls) => {
     let newpro = 0;
     if (removed.isadded > 0) {
         await getProductInfo();
+        Clog.info(site, `Done`);
         const newproducts = await ProductModel.find({ site }).populate({
             path: 'url',
             match: { new: true }
@@ -28,6 +31,8 @@ const startScraping = async (req, res, site, getProductInfo, getUrls) => {
         newpro = newproducts.length;
     }
 
+    await RequestModel.findOneAndUpdate({ url: req.url }, { state: false });
+    
     const products = await ProductModel.find({ site }).populate({path: 'url'});
     const history = await historyModel.find({ site });
     const total = products.length;
@@ -70,9 +75,18 @@ const cron = async (req, res, site) => {
         res.status(500).send({ error: "An error occurred while processing the request." });
     }
 };
+const getLogs = async(req, res) => {
+    const count = req.query.count ?? 100;
+    const logs = await LogsModel.find().sort({updatedAt: -1, _id: -1}).skip(0).limit(count);
+    return res.json({
+        success: true, 
+        logs: logs
+    });
+}
 module.exports = {
     getProduct,
     startScraping,
     startScraping1,
-    cron
+    cron,
+    getLogs
 }

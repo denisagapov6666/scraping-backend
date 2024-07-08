@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer');
-
 const cheerio = require('cheerio');
 const {checkUrl} = require("../MainCheckUrls");
+const { Clog } = require('../utils');
+const site = "wicanders";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-
-const site = "wicanders";
 const urls= []
 const scrapeUrls = async (url) => {
     try {
@@ -45,24 +44,22 @@ const scrapeUrls = async (url) => {
         });
 
     } catch (error) {
-        console.error('Error fetching URLs:', error);
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
-    console.log("End getting Urls:");
 };
 
 module.exports = async () => {
-    console.log("Get Urls:");
+    Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
     try {
         // Fetch brands
         await scrapeUrls("https://www.wicanders.us/products/cork-66")
         await scrapeUrls("https://www.wicanders.us/products/wood-67")
         await scrapeUrls("https://www.wicanders.us/products/stone-68")
-        console.log(urls) // 5578 NOURTEX
+
         const data = await checkUrl(site,urls);
         return data;
     } catch (error) {
-        console.error(error);
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
-    console.log("End getting Urls:**")
 };
 

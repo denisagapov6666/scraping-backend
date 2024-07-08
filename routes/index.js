@@ -17,6 +17,7 @@ const hardwoodRoute = require('./hardwood/hardwood');
 const adorraRoute = require('./adorra/adorra');
 const rebelRoute = require('./rebel/rebel');
 const mohawkRoute = require('./mohawk/mohawk');
+const { getLogs } = require('../controllers/controller');
 
 const app = express();
 app.use("/prestige",prestigeRoute);
@@ -37,6 +38,7 @@ app.use("/hardwood",hardwoodRoute)
 app.use("/adorra",adorraRoute)
 app.use("/rebel",rebelRoute)
 app.use("/mohawk",mohawkRoute)
+app.use("/logs", getLogs)
 app.use("/", function(req, res) {
     res.json({
         success: 'Carpet Scaper API Is Live!'
