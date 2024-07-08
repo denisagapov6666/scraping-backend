@@ -13,7 +13,7 @@ const isScrapingByOtherUser = async (req, res, next) => {
         // Check if any URL is currently being scraped
         const isScraping = await requestUrl.findOne({ state: true });
         if (isScraping) {
-            const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
+            const thirtyMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
             if (isScraping.updatedAt < thirtyMinsAgo) {
                 // More than 30mins have passed since the started scraping
                 // stop here?
