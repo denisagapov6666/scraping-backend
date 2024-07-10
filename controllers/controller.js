@@ -19,9 +19,12 @@ const getProduct = async (req, res, site) => {
 }
 
 const startScraping = async (req, res, site, getProductInfo, getUrls) => {
+    // we need to reset it because some child scraping set it as 0
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+
     const removed = await getUrls();
     let newpro = 0;
-    if (removed.isadded > 0) {
+    if (removed?.isadded > 0) {
         await getProductInfo();
         Clog.info(site, `Done`);
         const newproducts = await ProductModel.find({ site }).populate({
@@ -38,7 +41,7 @@ const startScraping = async (req, res, site, getProductInfo, getUrls) => {
     const total = products.length;
     await RequestModel.findOneAndUpdate({ url: req.url }, { state: false });
     const newdeleteamount = await state()
-    return res.status(200).json({ success: true, data: { removed: removed.removed, new: newpro, products, total, history },newdeleteamount })
+    return res.status(200).json({ success: true, data: { removed: removed?.removed, new: newpro, products, total, history },newdeleteamount })
 }
 const startScraping1 = async (req, res, site, getUrls) => {
     const removed = await getUrls();

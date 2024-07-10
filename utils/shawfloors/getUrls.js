@@ -12,6 +12,7 @@ const generateUrl = (styleName, styleNumber, colorName) => {
 module.exports = async () => {
     Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
     try {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
         const response = await axios.get("https://shawfloors.com/api/odata/Carpets?$count=true&$orderby=StyleSequence,UniqueId&$filter=ProductGroupPermanentName%20eq%20%27shawfloors%27%20and%20ProductGroupShowOnBrowseCat%20eq%20true%20and%20IsDropped%20eq%20false%20and%20(IsDefaultStyleColor%20eq%20true)%20");
         const carpets = response.data.value;
         const uus = [];
@@ -22,7 +23,6 @@ module.exports = async () => {
             for (const curl of urls) {
                 const u = generateUrl(curl['SellingStyleName'], curl['SellingStyleNbr'], curl['SellingColorName']);
                 uus.push(u)   
-                console.log(u)             
             }
         }
         const data = await checkUrl(site,uus);
