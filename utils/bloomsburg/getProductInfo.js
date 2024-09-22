@@ -27,7 +27,11 @@ const scrapeData = (url) => new Promise(async (resolve, reject) => {
         const imageUrls = [];
         const images = $('div.slide-image img');
         images.each((index, element) => {
-            imageUrls.push($(element).attr('data-lazy-srcset').split(" ")[0]);
+            if ($(element).attr('data-lazy-srcset')) {
+                imageUrls.push($(element).attr('data-lazy-srcset').split(" ")[0]);
+            } else {
+                imageUrls.push($(element).attr('srcset').split(" ")[0]);
+            }
         });
         const props = {
             category:'CARPET',
@@ -48,8 +52,9 @@ const scrapeData = (url) => new Promise(async (resolve, reject) => {
         };
         resolve(props)
     } catch (error) {
-        reject(error);
-        console.log('Error fetching URL:', error);
+        // reject(error);
+        resolve(null);
+        console.error('Error fetching URL:', error);
     }
 })
 

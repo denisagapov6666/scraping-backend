@@ -16,6 +16,10 @@ const URLSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: true
+    },
+    productsCount: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

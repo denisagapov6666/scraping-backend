@@ -13,7 +13,13 @@ const isScrapingByOtherUser = async (req, res, next) => {
         // Check if any URL is currently being scraped
         const isScraping = await requestUrl.findOne({ state: true });
         if (isScraping) {
-            return res.status(200).json({ success: false, message: 'Another user or process is currently scraping. Please wait.' });
+            const thirtyMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+            if (isScraping.updatedAt < thirtyMinsAgo) {
+                // More than 30mins have passed since the started scraping
+                // stop here?
+            } else {
+                return res.status(200).json({ success: false, message: 'Another user or process is currently scraping. Please wait.' });
+            }
         }
 
         // Update the state of the current URL to indicate scraping in progress

@@ -4,15 +4,24 @@ const site = "mohawk";
 const URLModel = require('../../models/urls');
 const Product = require('../../models/products');
 
+const { Clog } = require('../utils');
 
 module.exports = async () => {
-    console.log("Get Urls:");
+    Clog.info(site, `Started to monitor ${site}. Fetching urls...`)
     try {
         const URL = "https://core.dxpapi.com/api/v1/core/?&q=*&efq=flooring_type%3A(%22Carpet%22)&rows=20&start=0&search_type=keyword&request_type=search&fl=color_code,sku_thumb_images,product_description,sku_thumb_images,sku_swatch_images,installMethod,room,woodType,wood_type,colors,feature,sku_color,look_visual,collection_name,flooring_type,installation_level,swatch_images,thumb_images,room_scene,manufacturer_url,pid,skuid,title,brand,carpet_types,url,thumb_image,color_name,colorGroup,colorVariation,product_line,look,country_origin,style_name,style_number,searchableFlag&account_id=6677&auth_key=gmtnjthiky37113i&domain_key=mohawkflooring&request_id=7637386574986&_br_uid_2=uid%3D7378009071482%3Av%3D15.0%3Ats%3D1711593819485%3Ahc%3D70&url=https://www.mohawkflooring.com/shop/carpet?colorGroup=all&look=all&type=Carpet&page=2&ref_url=https://www.mohawkflooring.com/";
         const data = await axios.get(URL)
         const docs = data.data.response.docs;
         let count = 0 ;
-        const urls = []
+        const urls = [];
+
+        // generage urls set
+        let allUrlModels = await URLModel.find({site}).select('url');
+        const allUrlsSet = new Set(allUrlModels.map(urlModel => urlModel.url));
+        // and clear the allUrlModels because it can use large memory
+        allUrlModels.length = 0;
+        allUrlModels = null;
+
         for (let i = 0; i < docs.length; i++) {
             const element = docs[i].variants;
             for (let j = 0; j < element.length; j++) {
@@ -24,9 +33,8 @@ module.exports = async () => {
                 const productLine = element[j].product_line[0]
                 const url = `https://www.mohawkflooring.com/shop/Carpet/detail/${styleNumber}/${collectionName.replace(/ /g,"_")}/${colorCode}/${colorName.replace(/ /g,"_")}?productLine=${productLine.split(" ")[0]}&carpet_types=${carpetTypes}`
                 urls.push(url)
-                console.log(url)
-                const newUrlState = await URLModel.findOne({site,url});
-                if(!newUrlState){
+                
+                if(!allUrlsSet.has(url)){
                     const style = element[j].style_name[0];
                     const productDescription = element[j].product_description[0];
                     const feature = element[j].feature.join(",")
@@ -40,7 +48,6 @@ module.exports = async () => {
                         url,
                         deleted: false,
                     });
-                    console.log()
                     await newUrlModel.save();
                     const newUrl = await URLModel.findOne({site,url, new: true });
                     const newProduct = new Product({ 
@@ -67,8 +74,7 @@ module.exports = async () => {
         const dat = await checkUrl1(site,count,urls);
         return dat;
     } catch (error) {
-        console.error('Error fetching URLs:', error);
+        Clog.error(site, 'Error fetching URLs:' + error.message);
     }
-    console.log("End getting Urls:**");
 };
 

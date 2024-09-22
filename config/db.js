@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-    mongoose.connect('mongodb+srv://denisagapov6666:ot7b4bwyk6QOAvuz@cluster0.yksarw0.mongodb.net/scraping')
+    mongoose.connect(process.env.MONGO_URL, {
+        dbName: process.env.DB_NAME,
+        user: process.env.DB_USER,
+        pass: process.env.DB_PASSWORD
+    })
         .then(async () => {
             console.log('Connected to MongoDB');
         })

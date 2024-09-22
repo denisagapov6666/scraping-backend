@@ -4,6 +4,14 @@ const URLSchema = new mongoose.Schema({
     site: {
         type: String,
         required: true
+    },
+    added: {
+        type: Number,
+        default: 0
+    },
+    removed: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 
