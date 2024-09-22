@@ -26,6 +26,9 @@ const mainGetProducts = (site, scrapeData) => {
                             const newProduct = new Product({ ...products, url: allUrlModels[i]._id });
                             await newProduct.save().then(() => console.log(`${++count} product is saved.`));
                         }
+
+                        allUrlModels[i].productsCount = Array.isArray(products) ? products.length : 1;
+                        allUrlModels[i].save().then(() => {});
                     }
                 } catch(error) {
                     Clog.error(site, `error fetching product - ${allUrlModels[i].url} - ${error.message}`);

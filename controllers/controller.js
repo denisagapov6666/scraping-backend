@@ -5,7 +5,9 @@ const RequestModel = require("../models/RequestModel");
 const LogsModel = require('../models/log');
 const state = require("../utils/state");
 const cronModel = require("../models/cron");
+const siteModel = require("../models/site");
 const { Clog } = require('../utils/utils');
+const runScraperFunction = require('../utils/cronscraper');
 
 const getProduct = async (req, res, site) => {
     try {
@@ -86,10 +88,51 @@ const getLogs = async(req, res) => {
         logs: logs
     });
 }
+const cronScraper = async(req, res) => {
+    try {
+        // Fetch the last updated site
+        let lastUpdatedSite = await siteModel.findOne().sort({ updatedAt: 1 }).exec();
+        
+        if (!lastUpdatedSite) {
+            // No sites found, add the list of sites to the database
+            const siteList = ["prestige", "couristan", "fibreworks", "kaya", "bloomsburg", "harcourt", "nourison", "kaleen", "fabrica", "dixie", "masland", "andersontuftex", "wicanders", "shawfloors", "hardwood", "adorra", "rebel", "mohawk"];
+            const sitesToAdd = siteList.map(site => ({ site }));
+            await siteModel.insertMany(sitesToAdd);
+
+            lastUpdatedSite = await siteModel.findOne().sort({ updatedAt: 1 }).exec();
+        }
+
+        // Get the current date
+        const currentDate = new Date();
+
+        // Calculate the time difference in milliseconds
+        const timeDifference = currentDate - lastUpdatedSite.updatedAt;
+
+        // Convert time difference to days
+        const daysDifference = timeDifference / (1000 * 3600 * 24);
+        const duration = process.env.CRON_DURATION ?? 7;
+        
+        // Check if more than one week (7 days) has passed
+        if (daysDifference > duration) {
+            // Run the scraper function for the site
+            await runScraperFunction(lastUpdatedSite.site);
+
+            // Optionally, update the site's updatedAt field to the current date
+            lastUpdatedSite.updatedAt = currentDate;
+            await lastUpdatedSite.save();
+        }
+
+        return res.status(200).json({ message: "Cron scraper executed" });
+    } catch (error) {
+        console.error("Error in cronScraper:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
 module.exports = {
     getProduct,
     startScraping,
     startScraping1,
     cron,
-    getLogs
+    getLogs,
+    cronScraper
 }
